@@ -226,7 +226,6 @@ void app_main(void)
                             ledc_set_duty(LEDC_MODE, LEDC_CHANNEL_3, duty);
                         }
 
-                        // Update all LED channels' duty cycles
                         ledc_update_duty(LEDC_MODE, LEDC_CHANNEL_1);
                         ledc_update_duty(LEDC_MODE, LEDC_CHANNEL_2);
                         ledc_update_duty(LEDC_MODE, LEDC_CHANNEL_3);
@@ -242,7 +241,7 @@ void app_main(void)
                         ESP_LOGW(TAG, "Invalid data [%s_%" PRIu32 "_%" PRIx32 "]", unit, chan_num, data);
                     }
 
-                    // vTaskDelay(1);
+                    vTaskDelay(1);
                 }
             }
             else if (ret == ESP_ERR_TIMEOUT)
