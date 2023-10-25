@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/StationMode/StationMode/main
+# Install script for directory: C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/StationMode/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

@@ -1,4 +1,4 @@
-/* * Data converted from C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/StationMode/StationMode/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/StationMode/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 .section .rodata.embedded
