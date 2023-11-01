@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/juang/OneDrive/Documentos/SistemasTiempoRealNotas/Wifi_Example/main
+# Install script for directory: C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

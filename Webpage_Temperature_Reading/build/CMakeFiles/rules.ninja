@@ -1353,7 +1353,7 @@ rule C_STATIC_LIBRARY_LINKER____idf_main_
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = C:\Users\juang\.espressif\tools\cmake\3.24.0\bin\cmake.exe --regenerate-during-build -SC:\Users\juang\OneDrive\Documentos\SistemasTiempoRealNotas\Wifi_Example -BC:\Users\juang\OneDrive\Documentos\SistemasTiempoRealNotas\Wifi_Example\build
+  command = C:\Users\juang\.espressif\tools\cmake\3.24.0\bin\cmake.exe --regenerate-during-build -SC:\Users\juang\OneDrive\Documentos\SistemasenTiempoReal\SistemasEnTiempoReal\Webpage_Temperature_Reading -BC:\Users\juang\OneDrive\Documentos\SistemasenTiempoReal\SistemasEnTiempoReal\Webpage_Temperature_Reading\build
   description = Re-running CMake...
   generator = 1
 

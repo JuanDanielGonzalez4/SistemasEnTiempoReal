@@ -19,15 +19,22 @@
 			</header>
 
 			<div id="OTA">
-				<h2>Wifi Credentials:
-				</h2>
-				<form action="">
-					<label for="GET-name">Network:</label>
-					<input id="GET-name" type="text" name="name" />
-					<label for="GET-name">Password:</label>
-					<input id="GET-password" type="text" name="password" />
-					<input type="submit" value="Save" />
-				</form>
+				<div id="WifiConnect">
+					<h2>Wifi Credentials:
+					</h2>
+					<form action="">
+						<label for="connect_ssid">Network:</label>
+						<input id="connect_ssid" type="text" maxlength="32" placeholder="SSID" value="">
+						<label for="connect_pass">Password:</label>
+						<input id="connect_pass" type="password" maxlength="64" placeholder="Password" value="">
+						<input type="checkbox" onclick="showPassword()">Show Password
+					</form>
+					<div class="buttons">
+						<input id="connect_wifi" type="button" value="Connect" />
+					</div>
+					<div id="wifi_connect_credentials_errors"></div>
+					<h4 id="wifi_connect_status"></h4>
+				</div>
 				<h2>ESP32 Firmware Update</h2>
 				<label id="latest_firmware_label">Latest Firmware: </label>
 				<div id="latest_firmware"></div>
@@ -41,6 +48,9 @@
 					<span id="dot" class="dot"></span>
 					<span id="adcValue"></span>
 				</h2>
+				<div class="buttons">
+
+				</div>
 			</div>
 		</div>
 	</div>

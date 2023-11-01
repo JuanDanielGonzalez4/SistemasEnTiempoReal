@@ -20,7 +20,7 @@ void adc_config(void)
     ESP_ERROR_CHECK(adc_oneshot_config_channel(adc1_handle, EXAMPLE_ADC1_CHAN0, &config));
 
     // Create a queue to handle ADC data
-    ADC_QUEUE = xQueueCreate(10, sizeof(int));
+    ADC_QUEUE = xQueueCreate(10, sizeof(double));
 
     // Create a task to read ADC
     xTaskCreate(adc_read_task, "adc_read_task", 2048, NULL, 5, NULL);
@@ -32,7 +32,14 @@ void adc_read_task(void *pvParameters)
     while (1)
     {
         ESP_ERROR_CHECK(adc_oneshot_read(adc1_handle, ADC_CHANNEL_4, &data));
-        xQueueSend(ADC_QUEUE, &data, portMAX_DELAY);
+        printf("valor adc: %d\n", data);
+        double voltage_adc = data * VOLTAGE_REFERENCE / ADC_MAX_VALUE;
+        double resistance = RESISTOR_REFERENCE * voltage_adc / (VOLTAGE_REFERENCE - voltage_adc);
+
+        double temperature_kelvin = 1 / (A_COEFFICIENT + B_COEFFICIENT * log(resistance) + C_COEFFICIENT * pow(log(resistance), 3));
+        double temperature_celsius = temperature_kelvin - 273.15;
+
+        xQueueSend(ADC_QUEUE, &temperature_celsius, portMAX_DELAY);
         // if (xQueueReceive(ADC_QUEUE, &data, portMAX_DELAY))
         // {
         //     printf("Received: %d\n", data);

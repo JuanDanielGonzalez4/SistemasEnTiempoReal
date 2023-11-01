@@ -1,4 +1,4 @@
-/* * Data converted from C:/Users/juang/OneDrive/Documentos/SistemasTiempoRealNotas/Wifi_Example/main/webpage/favicon.ico
+/* * Data converted from C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/main/webpage/favicon.ico
  */
 .data
 .section .rodata.embedded

@@ -1,4 +1,4 @@
-/* * Data converted from C:/Users/juang/OneDrive/Documentos/SistemasTiempoRealNotas/Wifi_Example/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 .section .rodata.embedded

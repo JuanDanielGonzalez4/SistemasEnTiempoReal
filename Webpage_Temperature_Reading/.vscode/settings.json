@@ -16,6 +16,7 @@
   "files.associations": {
     "esp_log.h": "c",
     "queue.h": "c",
-    "http_server.h": "c"
+    "http_server.h": "c",
+    "adc_oneshot.h": "c"
   }
 }
