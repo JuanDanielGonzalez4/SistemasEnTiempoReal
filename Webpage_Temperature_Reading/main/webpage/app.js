@@ -115,7 +115,7 @@ function updateADCValue() {
     });
 }
 // Update every 2 seconds
-setInterval(updateADCValue, 200);
+setInterval(updateADCValue, 500);
 
 /**
  * Clears the connection status interval.
@@ -139,7 +139,7 @@ function getWifiConnectStatus() {
   if (xhr.readyState == 4 && xhr.status == 200) {
     var response = JSON.parse(xhr.responseText);
 
-    document.getElementById("wifi_connect_status").innerHTML = "Connecting...";
+    document.getElementById("wifi_connect_status").innerHTML = "Conectando...";
 
     if (response.wifi_connect_status == 2) {
       document.getElementById("wifi_connect_status").innerHTML =
@@ -147,7 +147,28 @@ function getWifiConnectStatus() {
       stopWifiConnectStatusInterval();
     } else if (response.wifi_connect_status == 3) {
       document.getElementById("wifi_connect_status").innerHTML =
-        "<h4 class='gr'>Connection Success!</h4>";
+        "Conexión Exitosa";
+      document.getElementById("WiFiForm").style.display = "none";
+      document.getElementById("dot_wifi").style.display = "block";
+
+      fetch("/ntp_value")
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(
+              "Network response was not ok " + response.statusText
+            );
+          }
+          return response.text();
+        })
+        .then((data) => {
+          console.log("Ntp value:", data);
+          document.getElementById("ntp_time").innerText = data;
+          document.getElementById("ntp_time").style.display = "block";
+        })
+        .catch((error) => {
+          console.error("There was a problem with the fetch operation:", error);
+        });
+
       stopWifiConnectStatusInterval();
     }
   }
@@ -247,4 +268,69 @@ function showPassword() {
   } else {
     x.type = "password";
   }
+}
+
+function updateRange() {
+  high_temp_lvalue = $("#red_led_range_l").val();
+  high_temp_uvalue = $("#red_led_range_u").val();
+
+  medium_temp_lvalue = $("#green_led_range_l").val();
+  medium_temp_uvalue = $("#green_led_range_u").val();
+
+  low_temp_lvalue = $("#blue_led_range_l").val();
+  low_temp_uvalue = $("#blue_led_range_u").val();
+
+  r_value_first_led = $("#red_led_R").val();
+  g_value_first_led = $("#red_led_G").val();
+  b_value_first_led = $("#red_led_B").val();
+
+  r_value_second_led = $("#green_led_R").val();
+  g_value_second_led = $("#green_led_G").val();
+  b_value_second_led = $("#green_led_B").val();
+
+  r_value_third_led = $("#blue_led_R").val();
+  g_value_third_led = $("#blue_led_G").val();
+  b_value_third_led = $("#blue_led_B").val();
+
+  // Create an object to hold the data to be sent in the request body
+  var requestData = {
+    high_temp_lvalue: high_temp_lvalue,
+    high_temp_uvalue: high_temp_uvalue,
+    medium_temp_lvalue: medium_temp_lvalue,
+    medium_temp_uvalue: medium_temp_uvalue,
+    low_temp_lvalue: low_temp_lvalue,
+    low_temp_uvalue: low_temp_uvalue,
+    r_value_first_led: r_value_first_led,
+    g_value_first_led: g_value_first_led,
+    b_value_first_led: b_value_first_led,
+    r_value_second_led: r_value_second_led,
+    g_value_second_led: g_value_second_led,
+    b_value_second_led: b_value_second_led,
+    r_value_third_led: r_value_third_led,
+    g_value_third_led: g_value_third_led,
+    b_value_third_led: b_value_third_led,
+  };
+
+  console.log(high_temp_lvalue, high_temp_uvalue);
+  // Serialize the data object to JSON
+  var requestDataJSON = JSON.stringify(requestData);
+
+  $.ajax({
+    url: "/tempRange.json",
+    dataType: "json",
+    method: "POST",
+    cache: false,
+    data: requestDataJSON, // Send the JSON data in the request body
+    contentType: "application/json", // Set the content type to JSON
+    success: function (response) {
+      // Handle the success response from the server
+      console.log(response);
+    },
+    error: function (xhr, status, error) {
+      // Handle errors
+      console.error(xhr.responseText);
+    },
+  });
+
+  // startWifiConnectStatusInterval();
 }

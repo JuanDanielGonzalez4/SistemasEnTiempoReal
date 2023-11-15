@@ -11,6 +11,9 @@
 #include "esp_timer.h"
 #include "sys/param.h"
 #include <stdlib.h>
+#include "freertos/queue.h"
+#include "rgb_led.h"
+#include "ntp.h"
 
 #include "http_server.h"
 #include "tasks_common.h"
@@ -31,8 +34,10 @@ static httpd_handle_t http_server_handle = NULL;
 // HTTP server monitor task handle
 static TaskHandle_t task_http_server_monitor = NULL;
 
-// Queue handle used to manipulate the main queue of events
+// Queue handle used to manipulate the main queue of eventsº
 static QueueHandle_t http_server_monitor_queue_handle;
+
+QueueHandle_t temperatureQueue;
 
 const esp_timer_create_args_t fw_update_reset_args = {
 	.callback = &http_server_fw_update_reset_callback,
@@ -42,6 +47,8 @@ const esp_timer_create_args_t fw_update_reset_args = {
 esp_timer_handle_t fw_update_reset;
 
 extern QueueHandle_t ADC_QUEUE;
+
+extern QueueHandle_t NTP_QUEUE;
 
 // Embedded files: JQuery, index.html, app.css, app.js and favicon.ico files
 extern const uint8_t jquery_3_3_1_min_js_start[] asm("_binary_jquery_3_3_1_min_js_start");
@@ -99,6 +106,7 @@ static void http_server_monitor(void *parameter)
 				ESP_LOGI(TAG, "HTTP_MSG_WIFI_CONNECT_SUCCESS");
 
 				g_wifi_connect_status = HTTP_WIFI_STATUS_CONNECT_SUCCESS;
+				ntp_wifi_connection_received();
 
 				break;
 
@@ -211,7 +219,6 @@ static esp_err_t http_server_adc_value_handler(httpd_req_t *req)
 	// Attempt to receive the ADC value from the queue
 	if (xQueueReceive(ADC_QUEUE, &adc_value, portMAX_DELAY))
 	{
-		printf("Received: %f\n", adc_value);
 		char response[10];
 		snprintf(response, sizeof(response), "%f", adc_value); // sending just the value
 		httpd_resp_send(req, response, strlen(response));
@@ -219,6 +226,23 @@ static esp_err_t http_server_adc_value_handler(httpd_req_t *req)
 	else
 	{
 		// Handle the error, e.g., send a response indicating failure.
+		httpd_resp_send_500(req);
+	}
+
+	return ESP_OK;
+}
+
+static esp_err_t http_server_ntp_value_handler(httpd_req_t *req)
+{
+	char ntp_value[64];
+
+	// Attempt to receive the ADC value from the queue
+	if (xQueueReceive(NTP_QUEUE, &ntp_value, portMAX_DELAY))
+	{
+		httpd_resp_send(req, ntp_value, strlen(ntp_value));
+	}
+	else
+	{
 		httpd_resp_send_500(req);
 	}
 
@@ -327,14 +351,159 @@ static esp_err_t http_server_wifi_connect_json_handler(httpd_req_t *req)
 
 	// Update the Wifi networks configuration and let the wifi application know
 	wifi_config_t *wifi_config = wifi_app_get_wifi_config();
-	memset(wifi_config, 0x00, sizeof(wifi_config_t));
+	// memset(wifi_config, 0x00, sizeof(wifi_config_t));
+	memset(wifi_config->sta.ssid, 0x00, 32);
+	memset(wifi_config->sta.password, 0x00, 64);
 	memcpy(wifi_config->sta.ssid, ssid_str, strlen(ssid_str));
 	memcpy(wifi_config->sta.password, pass_str, strlen(pass_str));
-	wifi_app_send_message(WIFI_APP_MSG_CONNECTING_FROM_HTTP_SERVER);
 
+	wifi_app_send_message(WIFI_APP_MSG_CONNECTING_FROM_HTTP_SERVER);
 	free(ssid_str);
 	free(pass_str);
 
+	return ESP_OK;
+}
+
+static esp_err_t http_server_temp_range_handler(httpd_req_t *req)
+{
+	size_t header_len;
+	char *header_value;
+	int high_temp_lvalue_num = 0;
+	int high_temp_uvalue_num = 0;
+	int medium_temp_lvalue_num = 0;
+	int medium_temp_uvalue_num = 0;
+	int low_temp_lvalue_num = 0;
+	int low_temp_uvalue_num = 0;
+	int r_value_first_led_num = 0;
+	int g_value_first_led_num = 0;
+	int b_value_first_led_num = 0;
+	int r_value_second_led_num = 0;
+	int g_value_second_led_num = 0;
+	int b_value_second_led_num = 0;
+	int r_value_third_led_num = 0;
+	int g_value_third_led_num = 0;
+	int b_value_third_led_num = 0;
+	int content_length;
+
+	ESP_LOGI(TAG, "/tempRange.json requested");
+
+	// Get the "Content-Length" header to determine the length of the request body
+	header_len = httpd_req_get_hdr_value_len(req, "Content-Length");
+	if (header_len <= 0)
+	{
+		// Content-Length header not found or invalid
+		// httpd_resp_send_err(req, HTTP_STATUS_411_LENGTH_REQUIRED, "Content-Length header is missing or invalid");
+		ESP_LOGI(TAG, "Content-Length header is missing or invalid");
+		return ESP_FAIL;
+	}
+
+	// Allocate memory to store the header value
+	header_value = (char *)malloc(header_len + 1);
+	if (httpd_req_get_hdr_value_str(req, "Content-Length", header_value, header_len + 1) != ESP_OK)
+	{
+		// Failed to get Content-Length header value
+		free(header_value);
+		// httpd_resp_send_err(req, HTTP_STATUS_BAD_REQUEST, "Failed to get Content-Length header value");
+		ESP_LOGI(TAG, "Failed to get Content-Length header value");
+		return ESP_FAIL;
+	}
+
+	// Convert the Content-Length header value to an integer
+	content_length = atoi(header_value);
+	free(header_value);
+
+	if (content_length <= 0)
+	{
+		// Content length is not a valid positive integer
+		// httpd_resp_send_err(req, HTTP_STATUS_BAD_REQUEST, "Invalid Content-Length value");
+		ESP_LOGI(TAG, "Invalid Content-Length value");
+		return ESP_FAIL;
+	}
+
+	// Allocate memory for the data buffer based on the content length
+	char *data_buffer = (char *)malloc(content_length + 1);
+
+	// Read the request body into the data buffer
+	if (httpd_req_recv(req, data_buffer, content_length) <= 0)
+	{
+		// Handle error while receiving data
+		free(data_buffer);
+		// httpd_resp_send_err(req, HTTP_STATUS_INTERNAL_SERVER_ERROR, "Failed to receive request body");
+		ESP_LOGI(TAG, "Failed to receive request body");
+		return ESP_FAIL;
+	}
+
+	// Null-terminate the data buffer to treat it as a string
+	data_buffer[content_length] = '\0';
+	ESP_LOGI(TAG, "Received JSON data: %s", data_buffer);
+
+	// Parse the received JSON data
+	cJSON *root = cJSON_Parse(data_buffer);
+	if (root == NULL)
+	{
+		const char *error_ptr = cJSON_GetErrorPtr();
+		if (error_ptr != NULL)
+		{
+			ESP_LOGE(TAG, "Error before: %s", error_ptr);
+		}
+		return ESP_FAIL; // Or handle the error as needed
+	}
+	free(data_buffer);
+
+	if (root == NULL)
+	{
+		// JSON parsing error
+		// httpd_resp_send_err(req, HTTP_STATUS_BAD_REQUEST, "Invalid JSON data");
+		ESP_LOGI(TAG, "Invalid JSON data");
+		return ESP_FAIL;
+	}
+
+	cJSON *high_temp_lvalue_json = cJSON_GetObjectItem(root, "high_temp_lvalue");
+	cJSON *high_temp_uvalue_json = cJSON_GetObjectItem(root, "high_temp_uvalue");
+	cJSON *medium_temp_lvalue_json = cJSON_GetObjectItem(root, "medium_temp_lvalue");
+	cJSON *medium_temp_uvalue_json = cJSON_GetObjectItem(root, "medium_temp_uvalue");
+	cJSON *low_temp_lvalue_json = cJSON_GetObjectItem(root, "low_temp_lvalue");
+	cJSON *low_temp_uvalue_json = cJSON_GetObjectItem(root, "low_temp_uvalue");
+	cJSON *r_value_first_led_json = cJSON_GetObjectItem(root, "r_value_first_led");
+	cJSON *g_value_first_led_json = cJSON_GetObjectItem(root, "g_value_first_led");
+	cJSON *b_value_first_led_json = cJSON_GetObjectItem(root, "b_value_first_led");
+	cJSON *r_value_second_led_json = cJSON_GetObjectItem(root, "r_value_second_led");
+	cJSON *g_value_second_led_json = cJSON_GetObjectItem(root, "g_value_second_led");
+	cJSON *b_value_second_led_json = cJSON_GetObjectItem(root, "b_value_second_led");
+	cJSON *r_value_third_led_json = cJSON_GetObjectItem(root, "r_value_third_led");
+	cJSON *g_value_third_led_json = cJSON_GetObjectItem(root, "g_value_third_led");
+	cJSON *b_value_third_led_json = cJSON_GetObjectItem(root, "b_value_third_led");
+
+	TemperatureValues tempVals;
+
+	tempVals.high_temp_lvalue = atoi(cJSON_GetStringValue(high_temp_lvalue_json));
+	tempVals.high_temp_uvalue = atoi(cJSON_GetStringValue(high_temp_uvalue_json));
+	tempVals.medium_temp_lvalue = atoi(cJSON_GetStringValue(medium_temp_lvalue_json));
+	tempVals.medium_temp_uvalue = atoi(cJSON_GetStringValue(medium_temp_uvalue_json));
+	tempVals.low_temp_lvalue = atoi(cJSON_GetStringValue(low_temp_lvalue_json));
+	tempVals.low_temp_uvalue = atoi(cJSON_GetStringValue(low_temp_uvalue_json));
+	tempVals.r_value_first_led = atoi(cJSON_GetStringValue(r_value_first_led_json));
+	tempVals.g_value_first_led = atoi(cJSON_GetStringValue(g_value_first_led_json));
+	tempVals.b_value_first_led = atoi(cJSON_GetStringValue(b_value_first_led_json));
+	tempVals.r_value_second_led = atoi(cJSON_GetStringValue(r_value_second_led_json));
+	tempVals.g_value_second_led = atoi(cJSON_GetStringValue(g_value_second_led_json));
+	tempVals.b_value_second_led = atoi(cJSON_GetStringValue(b_value_second_led_json));
+	tempVals.r_value_third_led = atoi(cJSON_GetStringValue(r_value_third_led_json));
+	tempVals.g_value_third_led = atoi(cJSON_GetStringValue(g_value_third_led_json));
+	tempVals.b_value_third_led = atoi(cJSON_GetStringValue(b_value_third_led_json));
+
+	cJSON_Delete(root);
+
+	temperatureQueue = xQueueCreate(10, sizeof(TemperatureValues));
+	xQueueSend(temperatureQueue, &tempVals, portMAX_DELAY);
+
+	// Now, you have the SSID and password in ssid_str and pass_str
+	ESP_LOGI(TAG, "Received Temp Range High: %d - %d", tempVals.high_temp_lvalue, tempVals.high_temp_uvalue);
+	ESP_LOGI(TAG, "Received Temp Range Medium: %d - %d", tempVals.medium_temp_lvalue, tempVals.medium_temp_uvalue);
+	ESP_LOGI(TAG, "Received Temp Range Low: %d - %d", tempVals.low_temp_lvalue, tempVals.low_temp_uvalue);
+	ESP_LOGI(TAG, "Received first RGB values: %d - %d - %d", tempVals.r_value_first_led, tempVals.g_value_first_led, tempVals.b_value_first_led);
+
+	rgb_led_http_received();
 	return ESP_OK;
 }
 
@@ -445,6 +614,21 @@ static httpd_handle_t http_server_configure(void)
 			.handler = http_server_adc_value_handler,
 			.user_ctx = NULL};
 		httpd_register_uri_handler(http_server_handle, &adc_value);
+
+		httpd_uri_t ntp_value = {
+			.uri = "/ntp_value",
+			.method = HTTP_GET,
+			.handler = http_server_ntp_value_handler,
+			.user_ctx = NULL};
+		httpd_register_uri_handler(http_server_handle, &ntp_value);
+
+		// Register the Range value handler
+		httpd_uri_t temp_range = {
+			.uri = "/tempRange.json",
+			.method = HTTP_POST,
+			.handler = http_server_temp_range_handler,
+			.user_ctx = NULL};
+		httpd_register_uri_handler(http_server_handle, &temp_range);
 
 		// register wifiConnect.json handler
 		httpd_uri_t wifi_connect_json = {

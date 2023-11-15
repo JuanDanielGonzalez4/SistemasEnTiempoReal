@@ -10,12 +10,13 @@
 
 #define DELAY 100
 #define RESISTOR_REFERENCE 10000
-#define VOLTAGE_REFERENCE 3.3
+#define VOLTAGE_REFERENCE 3300
 #define ADC_MAX_VALUE 4096
 
 #define A_COEFFICIENT 0.001129148
 #define B_COEFFICIENT 0.000234125
 #define C_COEFFICIENT 0.0000000876741
+#define CELCIUS_RATE 10
 void adc_config(void);
 
 void adc_read_task();

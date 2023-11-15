@@ -18,6 +18,7 @@
 #include "rgb_led.h"
 #include "tasks_common.h"
 #include "wifi_app.h"
+#include "ntp.h"
 
 // Tag used for ESP serial console messages
 static const char TAG[] = "wifi_app";
@@ -70,6 +71,7 @@ static void wifi_app_event_handler(void *arg, esp_event_base_t event_base, int32
 
 		case WIFI_EVENT_STA_CONNECTED:
 			ESP_LOGI(TAG, "WIFI_EVENT_STA_CONNECTED");
+			// ntp_wifi_connection_received();
 			break;
 
 		case WIFI_EVENT_STA_DISCONNECTED:
@@ -226,12 +228,16 @@ static void wifi_app_task(void *pvParameters)
 			case WIFI_APP_MSG_CONNECTING_FROM_HTTP_SERVER:
 				ESP_LOGI(TAG, "WIFI_APP_MSG_CONNECTING_FROM_HTTP_SERVER");
 
+				wifi_app_connect_sta();
+				g_retry_number = 0;
+				http_server_monitor_send_message(HTTP_MSG_WIFI_CONNECT_INIT);
+
 				break;
 
 			case WIFI_APP_MSG_STA_CONNECTED_GOT_IP:
 				ESP_LOGI(TAG, "WIFI_APP_MSG_STA_CONNECTED_GOT_IP");
 				rgb_led_wifi_connected();
-
+				http_server_monitor_send_message(HTTP_MSG_WIFI_CONNECT_SUCCESS);
 				break;
 
 			case WIFI_APP_MSG_STA_DISCONNECTED:
@@ -264,6 +270,10 @@ void wifi_app_start(void)
 
 	// Disable default WiFi logging messages
 	esp_log_level_set("wifi", ESP_LOG_NONE);
+
+	// Allocate memory for the wifi configuration
+	wifi_config = (wifi_config_t *)malloc(sizeof(wifi_config_t));
+	memset(wifi_config, 0x00, sizeof(wifi_config_t));
 
 	// Create message queue
 	wifi_app_queue_handle = xQueueCreate(3, sizeof(wifi_app_queue_message_t));

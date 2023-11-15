@@ -1,7 +1,7 @@
 {
     "version":            "1",
     "project_name":       "Wifi_Example",
-    "project_version":    "1c28403-dirty",
+    "project_version":    "7b04775-dirty",
     "project_path":       "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading",
     "idf_path":           "C:/Users/juang/esp/esp-idf",
     "build_dir":          "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/build",
@@ -790,7 +790,7 @@
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/build/esp-idf/main/libmain.a",
-            "sources": [ "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/main/rgb_led.c", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/main/wifi_app.c", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/main/http_server.c", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/main/main.c", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/main/adc.c", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/build/app.css.S", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/build/app.js.S", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/build/favicon.ico.S", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/build/index.html.S", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/build/jquery-3.3.1.min.js.S" ],
+            "sources": [ "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/main/ntp.c", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/main/rgb_led.c", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/main/wifi_app.c", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/main/http_server.c", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/main/main.c", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/main/adc.c", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/build/app.css.S", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/build/app.js.S", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/build/favicon.ico.S", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/build/index.html.S", "C:/Users/juang/OneDrive/Documentos/SistemasenTiempoReal/SistemasEnTiempoReal/Webpage_Temperature_Reading/build/jquery-3.3.1.min.js.S" ],
             "include_dirs": [ "." ]
         },
         "mbedtls": {

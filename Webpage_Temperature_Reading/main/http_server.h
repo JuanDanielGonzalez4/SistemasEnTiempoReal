@@ -44,6 +44,27 @@ typedef struct http_server_queue_message
 } http_server_queue_message_t;
 
 /**
+ * Structure for TemperatureValues
+ */
+typedef struct TemperatureValues
+{
+	int high_temp_lvalue;
+	int high_temp_uvalue;
+	int medium_temp_lvalue;
+	int medium_temp_uvalue;
+	int low_temp_lvalue;
+	int low_temp_uvalue;
+	int r_value_first_led;
+	int g_value_first_led;
+	int b_value_first_led;
+	int r_value_second_led;
+	int g_value_second_led;
+	int b_value_second_led;
+	int r_value_third_led;
+	int g_value_third_led;
+	int b_value_third_led;
+} TemperatureValues;
+/**
  * Sends a message to the queue
  * @param msgID message ID from the http_server_message_e enum.
  * @return pdTRUE if an item was successfully sent to the queue, otherwise pdFALSE.

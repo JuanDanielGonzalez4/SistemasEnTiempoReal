@@ -1,10 +1,1 @@
-0000000000000000000000000000000000000000 fa5f033833af47126a75ac43a98f71eaf01845bd Juan Daniel Gonzalez <juandanielgonzalez004@gmail.com> 1692581318 -0500	clone: from https://github.com/JuanDanielGonzalez4/SistemasEnTiempoReal.git
-fa5f033833af47126a75ac43a98f71eaf01845bd aa2d509ee257d4ca5cc6ddca20576fab8882428a Juan Daniel Gonzalez <juandanielgonzalez004@gmail.com> 1692588035 -0500	commit: First program ESP32
-aa2d509ee257d4ca5cc6ddca20576fab8882428a 17e2e23fb58628e42f62a041255600c7261a7a79 Juan Daniel Gonzalez <juandanielgonzalez004@gmail.com> 1694040205 -0500	merge develop: Fast-forward
-17e2e23fb58628e42f62a041255600c7261a7a79 07c7c47c47f46c3c664788c7f23cb07d6e4ec9ed Juan Daniel Gonzalez <juandanielgonzalez004@gmail.com> 1694047973 -0500	commit: Toggle Working With Queues
-07c7c47c47f46c3c664788c7f23cb07d6e4ec9ed 93c3342a3f99a9d71e40c8a747f99c4bbd79a3ad Juan Daniel Gonzalez <juandanielgonzalez004@gmail.com> 1694048089 -0500	commit: Delete wrong code
-250b91cfa57ee53da05ce4b2a613836cbf741864 b22be809e01255f8457e25b770e7ba9f3b18a818 JuanDanielGonzalez4 <juandanielgonzalez004@gmail.com> 1695686265 -0500	commit (amend): ADC
-b22be809e01255f8457e25b770e7ba9f3b18a818 b22be809e01255f8457e25b770e7ba9f3b18a818 JuanDanielGonzalez4 <juandanielgonzalez004@gmail.com> 1695686787 -0500	Branch: renamed refs/heads/main to refs/heads/main1
-b22be809e01255f8457e25b770e7ba9f3b18a818 a4a890ea489d873af5efdc6b969cd69db1beb1b0 JuanDanielGonzalez4 <juandanielgonzalez004@gmail.com> 1697061663 -0500	commit: Station mode
-a4a890ea489d873af5efdc6b969cd69db1beb1b0 bb3adcd6a7b25e3450b07df00e80fe7965d640b8 JuanDanielGonzalez4 <juandanielgonzalez004@gmail.com> 1697064039 -0500	commit: Fixed Errors in Station Mode
-bb3adcd6a7b25e3450b07df00e80fe7965d640b8 1c28403072fe44a8b3eb397259daae4c1cea3c73 JuanDanielGonzalez4 <juandanielgonzalez004@gmail.com> 1698270568 -0500	commit: Webpage with temperature reading added
+7b04775a1ad58f3a704b3edec67e022dfa5f7d13

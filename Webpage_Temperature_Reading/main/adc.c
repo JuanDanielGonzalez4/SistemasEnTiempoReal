@@ -32,13 +32,15 @@ void adc_read_task(void *pvParameters)
     while (1)
     {
         ESP_ERROR_CHECK(adc_oneshot_read(adc1_handle, ADC_CHANNEL_4, &data));
-        printf("valor adc: %d\n", data);
+
         double voltage_adc = data * VOLTAGE_REFERENCE / ADC_MAX_VALUE;
-        double resistance = RESISTOR_REFERENCE * voltage_adc / (VOLTAGE_REFERENCE - voltage_adc);
+        printf("valor adc 1: %f\n", voltage_adc);
+        double temperature_celsius = data / CELCIUS_RATE;
+        printf("temp: %f\n", temperature_celsius);
+        // double resistance = RESISTOR_REFERENCE * voltage_adc / (VOLTAGE_REFERENCE - voltage_adc);
 
-        double temperature_kelvin = 1 / (A_COEFFICIENT + B_COEFFICIENT * log(resistance) + C_COEFFICIENT * pow(log(resistance), 3));
-        double temperature_celsius = temperature_kelvin - 273.15;
-
+        // double temperature_kelvin = 1 / (A_COEFFICIENT + B_COEFFICIENT * log(resistance) + C_COEFFICIENT * pow(log(resistance), 3));
+        // double temperature_celsius = temperature_kelvin - 273.15;
         xQueueSend(ADC_QUEUE, &temperature_celsius, portMAX_DELAY);
         // if (xQueueReceive(ADC_QUEUE, &data, portMAX_DELAY))
         // {
